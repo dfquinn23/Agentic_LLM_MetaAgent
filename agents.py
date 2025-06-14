@@ -1,22 +1,23 @@
 # agents.py
-from langchain.llms.base import LLM
-from google.generativeai import GenerativeModel
+
 import os
 from dotenv import load_dotenv
-
 from crewai import Agent
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
-import google.generativeai as genai
+from langchain_community.llms import LiteLLM
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
-# Warn if critical env vars are missing
-required_keys = ["OPENAI_API_KEY", "CLAUDE_API_KEY", "GEMINI_API_KEY"]
-for key in required_keys:
+# Handle Claude fallback
+if not os.getenv("ANTHROPIC_API_KEY") and os.getenv("CLAUDE_API_KEY"):
+    os.environ["ANTHROPIC_API_KEY"] = os.getenv("CLAUDE_API_KEY")
+
+# Warn if keys are missing
+for key in ["OPENAI_API_KEY", "CLAUDE_API_KEY", "GEMINI_API_KEY"]:
     if not os.getenv(key):
-        print(f"\u26a0\ufe0f Warning: {key} is not set in the .env file")
+        print(f"⚠️ Warning: {key} is not set in the .env file")
 
 # --- ChatGPT Agent ---
 chatgpt_agent = Agent(
@@ -31,45 +32,27 @@ chatgpt_agent = Agent(
 )
 
 # --- Claude Agent ---
-claude_llm = ChatAnthropic(
-    model=os.getenv("CLAUDE_MODEL_NAME", "claude-3-opus-20240229"),
-    temperature=0.7,
-    anthropic_api_key=os.getenv("CLAUDE_API_KEY")
-)
-
 claude_agent = Agent(
     role="Claude",
     goal="Respond using Claude with clarity and ethics",
     backstory="You are Claude from Anthropic, known for nuanced reasoning.",
-    llm=claude_llm
+    llm=ChatAnthropic(
+        model=os.getenv("CLAUDE_MODEL_NAME", "claude-3-opus-20240229"),
+        temperature=0.7,
+        anthropic_api_key=os.getenv("CLAUDE_API_KEY")
+    )
 )
 
-# --- Gemini Agent (Direct SDK) ---
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-gemini_model = GenerativeModel(model_name=os.getenv(
-    "GEMINI_MODEL_NAME", "gemini-1.5-pro-latest"))
-
-
-def gemini_generate(prompt):
-    response = gemini_model.generate_content(prompt)
-    return response.text
-
-
-class GeminiLLM(LLM):
-    def _call(self, prompt, stop=None):
-        return gemini_generate(prompt)
-
-    @property
-    def _llm_type(self):
-        return "gemini"
-
-
+# --- Gemini Agent using LiteLLM ---
 gemini_agent = Agent(
     role="Gemini",
     goal="Respond using Google's Gemini model",
     backstory="You are Gemini, optimized for helpful, direct answers.",
-    llm=GeminiLLM()
+    llm=LiteLLM(
+        model="gemini-pro",  # NOTE: LiteLLM must receive this exact model name
+        api_key=os.getenv("GEMINI_API_KEY"),
+        temperature=0.7
+    )
 )
 
 # --- Comparison Agent ---
@@ -84,7 +67,7 @@ comparison_agent = Agent(
     )
 )
 
-# Export agents for external modules
+# --- Export all agents ---
 
 
 def get_all_agents():
