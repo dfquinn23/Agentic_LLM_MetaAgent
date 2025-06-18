@@ -11,7 +11,7 @@ from compare import create_comparison_task
 load_dotenv()
 
 st.set_page_config(page_title="Multi-LLM Prompt Comparator")
-st.title("🧠 LLM Response Comparator")
+st.title("🧠 LLM Response Comparison Tool")
 prompt = st.text_area("Enter a question or prompt")
 
 if st.button("Compare Responses") and prompt:
