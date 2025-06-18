@@ -30,7 +30,7 @@ colorama==0.4.6
 coloredlogs==15.0.1
 #crewai==0.121.1 - this is the old one
 crewai-tools==0.45.0
-crewai==0.126.0
+crewai==0.130.0
 cryptography==45.0.3
 dataclasses-json==0.6.7
 decorator==5.2.1
