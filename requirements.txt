@@ -1,66 +1,5 @@
 crewai==0.130.0
-cryptography==45.0.3
-dataclasses-json==0.6.7
-decorator==5.2.1
-Deprecated==1.2.18
-deprecation==2.1.0
-distro==1.9.0
-docker==7.1.0
-docstring_parser==0.16
-durationpy==0.10
-#embedchain==0.1.128
-et_xmlfile==2.0.0
-exceptiongroup==1.3.0
-executing==2.2.0
-fastapi==0.115.9
-fastavro==1.11.1
-filelock==3.18.0
-filetype==1.2.0
-flatbuffers==25.2.10
-frozenlist==1.6.0
-fsspec==2025.5.1
-gitdb==4.0.12
-GitPython==3.1.44
-google-ai-generativelanguage==0.6.15
-google-api-core==2.25.0
-google-api-python-client==2.172.0
-google-auth==2.40.2
-google-auth-httplib2==0.2.0
-google-generativeai==0.8.5
-googleapis-common-protos==1.70.0
-gptcache==0.1.44
-greenlet==3.2.2
-grpcio==1.71.0
-grpcio-status==1.71.0
-h11==0.16.0
-h2==4.2.0
-hpack==4.1.0
-httpcore==1.0.9
-httplib2==0.22.0
-httptools==0.6.4
-httpx==0.28.1
-httpx-sse==0.4.0
-huggingface-hub==0.32.3
-humanfriendly==10.0
-hyperframe==6.1.0
-idna==3.10
-importlib_metadata==8.6.1
-importlib_resources==6.5.2
-instructor==1.8.3
-ipython==8.37.0
-jedi==0.19.2
-Jinja2==3.1.6
-jiter==0.8.2
-json5==0.12.0
-json_repair==0.46.0
-jsonpatch==1.33
-jsonpickle==4.1.0
-jsonpointer==3.0.0
-jsonref==1.1.0
-jsonschema==4.24.0
-jsonschema-specifications==2025.4.1
-kubernetes==32.0.1
-lancedb==0.22.1
+crewai-tools==0.47.1 # As 0.45.0 was not found previously, 0.47.1 might be more compatible
 langchain==0.3.25
 langchain-community==0.3.25
 langchain-anthropic==0.3.15
@@ -70,6 +9,7 @@ litellm==1.72.0 # Force this to resolve crewai's dependency
 python-dotenv==1.1.0
 streamlit==1.45.1
 pydantic==2.11.5 # Ensure pydantic is explicitly set to a version compatible with CrewAI and Langchain
+
 
 # aiohappyeyeballs==2.6.1
 # aiohttp==3.12.13
