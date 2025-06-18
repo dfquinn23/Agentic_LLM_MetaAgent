@@ -2,10 +2,9 @@
 
 import os
 from dotenv import load_dotenv
-from crewai import Agent
+from crewai import Agent, LLM  # Keep LLM import
 from langchain_community.chat_models import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
-from langchain_community.llms import LiteLLM
 
 # Load environment variables
 load_dotenv()
@@ -19,7 +18,7 @@ for key in ["OPENAI_API_KEY", "CLAUDE_API_KEY", "GEMINI_API_KEY"]:
     if not os.getenv(key):
         print(f"⚠️ Warning: {key} is not set in the .env file")
 
-# --- ChatGPT Agent ---
+# --- ChatGPT Agent --- (No changes needed)
 chatgpt_agent = Agent(
     role="ChatGPT",
     goal="Answer user prompts using OpenAI's GPT-4",
@@ -27,11 +26,12 @@ chatgpt_agent = Agent(
     llm=ChatOpenAI(
         model=os.getenv("OPENAI_MODEL", "gpt-4"),
         temperature=0.7,
-        openai_api_key=os.getenv("OPENAI_API_KEY")
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        verbose=True
     )
 )
 
-# --- Claude Agent ---
+# --- Claude Agent --- (No changes needed)
 claude_agent = Agent(
     role="Claude",
     goal="Respond using Claude with clarity and ethics",
@@ -39,23 +39,30 @@ claude_agent = Agent(
     llm=ChatAnthropic(
         model=os.getenv("CLAUDE_MODEL_NAME", "claude-3-opus-20240229"),
         temperature=0.7,
-        anthropic_api_key=os.getenv("CLAUDE_API_KEY")
+        anthropic_api_key=os.getenv("CLAUDE_API_KEY"),
+        verbose=True
     )
 )
 
-# --- Gemini Agent using LiteLLM ---
+# --- CORRECTED Gemini Agent - Use a currently supported model name ---
 gemini_agent = Agent(
     role="Gemini",
     goal="Respond using Google's Gemini model",
     backstory="You are Gemini, optimized for helpful, direct answers.",
-    llm=LiteLLM(
-        model="gemini-pro",  # NOTE: LiteLLM must receive this exact model name
+    llm=LLM(  # Using CrewAI's LLM class
+        # CRITICAL CHANGE HERE: Use a supported Gemini model alias
+        # Or "gemini/gemini-1.5-flash-latest" for faster response
+        model="gemini/gemini-1.5-pro-latest",
         api_key=os.getenv("GEMINI_API_KEY"),
-        temperature=0.7
+        temperature=0.7,
+        request_timeout=120,  # Keep the timeout from our last attempt
+        # KEEP THIS - it's crucial for the direct Google API Studio path
+        force_provider="google",
+        verbose=True
     )
 )
 
-# --- Comparison Agent ---
+# --- Comparison Agent --- (No changes needed)
 comparison_agent = Agent(
     role="Comparison Agent",
     goal="Compare LLM responses and summarize quality and differences",
@@ -63,7 +70,8 @@ comparison_agent = Agent(
     llm=ChatOpenAI(
         model=os.getenv("OPENAI_MODEL", "gpt-4"),
         temperature=0.3,
-        openai_api_key=os.getenv("OPENAI_API_KEY")
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        verbose=True
     )
 )
 
