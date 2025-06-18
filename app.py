@@ -1,31 +1,48 @@
-# app.py
-
 import os
 import traceback
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # Used for local .env files
 
 # --- CRITICAL FIX FOR CHROMA/SQLITE3 START ---
-# These lines MUST be at the very top of your app.py
+# These lines MUST be at the very top of your app.py, before other imports
 try:
     __import__('pysqlite3')
     import sys
     sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 except ImportError:
-    pass  # Fallback to default sqlite3 if pysqlite3 is not available
+    pass
 # --- CRITICAL FIX FOR CHROMA/SQLITE3 END ---
-
 
 import streamlit as st
 from crewai import Crew
+# No need to import agents directly here as they are imported by tasks/compare
 from tasks import create_response_tasks
 from compare import create_comparison_task
 
-# Load environment variables
+# --- Load environment variables for local development ---
+# This is here for when you run the app locally using 'streamlit run app.py'
+# Streamlit Cloud uses its 'Secrets' mechanism instead of .env files.
 load_dotenv()
 
-st.set_page_config(page_title="Multi-LLM Prompt Comparator")
-st.title("🧠 LLM Response Comparison Tool")
+# --- Define Logo Path (Relative for Deployment) ---
+# Assuming your logo is in a subfolder named 'assets' in your repo root.
+# Adjust the path if your logo file is located elsewhere relative to app.py
+LOGO_PATH = "assets/email_sig.png"
+
+# --- Streamlit Page Configuration (MUST be the first Streamlit command) ---
+st.set_page_config(
+    page_title="Multi-LLM Response Comparison Tool",
+    page_icon=LOGO_PATH,  # Use the relative path for the favicon
+    layout="centered"  # Or "wide"
+)
+
+# --- Display Logo within the App Body (Optional, if you want it larger) ---
+# If you want the logo to appear prominently on the page itself,
+# rather than just as the favicon in the browser tab.
+st.image(LOGO_PATH, width=150)  # Adjust width as needed
+
+st.title("LLM Response Comparison Tool")  # Title without icon argument
 prompt = st.text_area("Enter a question or prompt")
+
 
 if st.button("Compare Responses") and prompt:
     # Step 1: Generate response tasks for each LLM
@@ -70,6 +87,7 @@ if st.button("Compare Responses") and prompt:
         st.markdown(f"### {name}")
         st.markdown(text)
 
+    # Step 2: Compare the responses
     comparison_task = create_comparison_task(agent_responses, prompt)
     compare_crew = Crew(tasks=[comparison_task],
                         agents=[comparison_task.agent],
