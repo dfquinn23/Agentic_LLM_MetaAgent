@@ -103,7 +103,8 @@ langchain-google-genai==2.1.5
 langchain-openai==0.3.22
 langchain-text-splitters==0.3.8
 langsmith==0.3.45
-litellm==1.68.0
+#litellm==1.68.0 - old. New version below hopes to resolve app bug
+litellm==1.72.0
 Mako==1.3.10
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
